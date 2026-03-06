@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ARC v17 — Regular GPS Fallback Map</title>
+  <style>
+    :root{--bg:#071015;--panel:#0d1b24;--panel2:#122432;--fg:#d6f2ff;--muted:#87a6b5;--line:#1d4256;--accent:#67f6ff;--accent2:#a6ff68;--warn:#ffc857;--bad:#ff6f7a;}
+    *{box-sizing:border-box} html,body{height:100%} body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 Inter,system-ui,Arial,sans-serif;overflow:hidden}
+    #app{display:grid;grid-template-columns:minmax(320px,380px) minmax(0,1fr);height:100vh;min-height:100vh;overflow:hidden}
+    #sidebar{background:linear-gradient(180deg,var(--panel),#08131a);border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+    #header{padding:12px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;background:linear-gradient(180deg,var(--panel),#08131a)}
+    #header h1{margin:0;font-size:18px;letter-spacing:.3px} #header .sub{color:var(--muted);font-size:12px;margin-top:2px} #boot{margin-top:8px;color:var(--accent2);font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    #controls{padding:12px 14px 24px;overflow-x:hidden;overflow-y:auto;display:flex;flex-direction:column;gap:12px;flex:1;min-height:0;overscroll-behavior:contain;scrollbar-gutter:stable}
+    .card{background:rgba(18,36,50,.88);border:1px solid var(--line);border-radius:12px;padding:10px 10px 12px;box-shadow:0 0 0 1px rgba(103,246,255,.04) inset}
+    .card h3{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:#d9fbff}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.split{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grow{flex:1}.w100{width:100%}
+    label{font-size:12px;color:var(--muted);display:block;margin:0 0 4px}
+    input,select,button{border-radius:9px;border:1px solid var(--line);background:#09161d;color:var(--fg);padding:8px 10px} input[type="range"]{padding:0;border:none;background:transparent;flex:1} input[type="file"]{padding:6px}
+    button{cursor:pointer;background:linear-gradient(180deg,#0d212d,#0b1820)} button:hover{border-color:#2d718f}.primary{border-color:#3b9bb4}.good{border-color:#50873b}.warn{border-color:#916d25}.bad{border-color:#8f3245}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.small{font-size:12px;color:var(--muted)} .hint{font-size:11px;color:var(--muted)}
+    #mapWrap{position:relative;min-width:0;min-height:0;overflow:hidden;background:radial-gradient(circle at 30% 20%, #102030 0%, #071118 42%, #04090d 100%)}
+    #map{position:absolute;inset:0;overflow:hidden;user-select:none;touch-action:none}
+    #tiles{position:absolute;inset:0;overflow:hidden;z-index:0;background:radial-gradient(circle at 30% 20%, #102030 0%, #071118 42%, #04090d 100%)}
+    #tiles img{position:absolute;width:256px;height:256px;max-width:none;max-height:none;pointer-events:none;user-select:none;-webkit-user-drag:none;opacity:.98}
+    #map svg{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2}
+    #map .bp{position:absolute;transform-origin:center center;pointer-events:none;display:none;filter:drop-shadow(0 0 18px rgba(103,246,255,.12))}
+    #rf{position:absolute;inset:0;pointer-events:none}
+    #hud{position:absolute;right:14px;top:14px;display:flex;flex-direction:column;gap:10px;z-index:500;max-height:calc(100vh - 28px);overflow:auto;padding-right:4px}
+    .hudCard{background:rgba(7,16,21,.88);border:1px solid var(--line);border-radius:12px;padding:10px;min-width:220px;backdrop-filter:blur(6px)} .hudCard h4{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.8px}
+    .kv{display:grid;grid-template-columns:120px 1fr;gap:4px 8px;font-size:12px}.meter{height:7px;background:#09161d;border:1px solid var(--line);border-radius:999px;overflow:hidden}.meter>span{display:block;height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));width:0%}
+    #log{height:150px;overflow:auto;background:#08131a;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:11px}.log-item{padding:2px 0;border-bottom:1px dashed rgba(255,255,255,.05)}
+    #controls::-webkit-scrollbar,#hud::-webkit-scrollbar{width:10px;height:10px} #controls::-webkit-scrollbar-thumb,#hud::-webkit-scrollbar-thumb{background:rgba(103,246,255,.22);border:2px solid transparent;border-radius:999px;background-clip:padding-box}
+    .sectionNote{margin-top:8px;padding:8px 10px;border:1px dashed rgba(103,246,255,.18);border-radius:10px;background:rgba(103,246,255,.03);font-size:11px;color:var(--muted)}
+    #fatal{position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:1000;max-width:min(760px,calc(100vw - 32px));padding:10px 14px;border-radius:12px;background:rgba(65,12,18,.92);border:1px solid rgba(255,111,122,.45);display:none;white-space:pre-wrap;font-size:12px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+    .map-tag{position:absolute;left:14px;bottom:14px;z-index:500;padding:8px 10px;border-radius:10px;background:rgba(7,16,21,.88);border:1px solid var(--line);font-size:11px;color:var(--muted)}
+    @media (max-width:980px){#app{grid-template-columns:minmax(300px,340px) minmax(0,1fr)} #hud{left:14px;right:14px;top:auto;bottom:14px;max-height:40vh}.hudCard{min-width:0}}
+  </style>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar"><div id="header"><h1>ARC v17</h1><div class="sub">Structure-locked spatial shell — regular GPS fallback map</div><div id="boot">BOOT: INIT</div></div>
+    <div id="controls">
+      <div class="card"><h3>Structure Lock</h3><label for="searchInput">Search address / structure</label><div class="row"><input id="searchInput" class="grow" placeholder="e.g. 100 Pine Ave" /><button id="searchBtn" class="primary">Search</button></div><label for="structureSelect" style="margin-top:8px">Available structures</label><select id="structureSelect" class="w100"></select><div class="row" style="margin-top:8px"><button id="lockBtn" class="good grow">Lock Structure</button><button id="clearBtn" class="bad grow">Clear Lock</button></div><div class="small" id="selectionStatus" style="margin-top:8px">No structure locked.</div></div>
+      <div class="card"><h3>Blueprint Overlay</h3><label for="bpFile">Upload blueprint image</label><input id="bpFile" type="file" accept="image/*" class="w100" /><div class="split" style="margin-top:8px"><div><label>Opacity</label><input id="bpOpacity" type="range" min="0" max="1" step="0.05" value="0.45" /></div><div><label>Scale</label><input id="bpScale" type="range" min="0.4" max="2.2" step="0.05" value="1" /></div></div><div class="split"><div><label>Offset X</label><input id="bpOffsetX" type="range" min="-0.0003" max="0.0003" step="0.00001" value="0" /></div><div><label>Offset Y</label><input id="bpOffsetY" type="range" min="-0.0003" max="0.0003" step="0.00001" value="0" /></div></div><div class="row" style="margin-top:8px"><button id="saveBlueprint" class="good grow">Save Blueprint</button><button id="resetBlueprint" class="warn grow">Reset</button></div><div class="hint" style="margin-top:8px">Alignment is stored per selected structure in localStorage.</div><div class="sectionNote">Fallback build: regular OSM GPS tiles load first, while the local shell still holds the structure overlays and tools.</div></div>
+      <div class="card"><h3>Simulation</h3><div class="row"><button id="startBtn" class="good grow">Start</button><button id="stopBtn" class="warn grow">Stop</button><button id="stepBtn" class="primary grow">Step</button></div><div class="split" style="margin-top:8px"><div><label>Tick ms</label><input id="tickMs" type="number" value="900" min="200" max="5000" class="w100" /></div><div><label>Noise dB</label><input id="noiseDb" type="number" value="3" min="0" max="15" class="w100" /></div></div><div class="small" style="margin-top:8px">Generates synthetic sensor readings from a ground-truth device point inside the locked structure.</div></div>
+      <div class="card"><h3>Debug Log</h3><div id="log"></div></div>
+    </div>
+  </aside>
+  <main id="mapWrap"><div id="fatal"></div><div id="map"><div id="tiles"></div><img id="bpImage" class="bp" alt="Blueprint overlay" /><svg id="mapSvg" viewBox="0 0 1000 1000" preserveAspectRatio="none"></svg></div><canvas id="rf"></canvas><div id="hud"><div class="hudCard"><h4>Selection</h4><div class="kv" id="selectionKv"></div></div><div class="hudCard"><h4>Estimator</h4><div class="kv" id="estimatorKv"></div><div class="meter" style="margin-top:8px"><span id="confidenceBar"></span></div></div></div><div class="map-tag">Regular GPS Fallback Map • Pan: drag • Zoom: wheel / +/-</div></main>
+</div>
+<script src="./arc/app.bundle.js"></script>
+</body>
+</html>
