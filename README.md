@@ -132,8 +132,7 @@ fusion.test.js
 
 Clone the repository
 
-git clone
-https://github.com/yourname/spatial-signal-intelligence-engine\
+
 cd spatial-signal-intelligence-engine
 
 Run a demo simulation
