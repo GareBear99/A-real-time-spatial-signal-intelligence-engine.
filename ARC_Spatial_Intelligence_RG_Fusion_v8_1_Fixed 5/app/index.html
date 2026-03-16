@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LuciferAI Spatial Intelligence Engine — RG Fusion v8</title>
+  <style>
+    :root{
+      --bg:#f5f2ff;--bg2:#ece7ff;--panel:rgba(255,255,255,.96);--panel2:#f7f3ff;--panel3:#fbf9ff;--line:#e5def8;
+      --fg:#1f1631;--muted:#72648f;--accent:#7A3CFF;--accent2:#B18CFF;--gold:#b17b00;--warm:#c88a12;--bad:#d94b6a;--good:#2f9e62;
+      --shadow:0 16px 40px rgba(66,39,128,.10);--radius:16px;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+    }
+    body[data-theme="dark"]{
+      --bg:#120f18;--bg2:#171321;--panel:rgba(22,18,32,.96);--panel2:#221b32;--panel3:#191424;--line:#31284a;
+      --fg:#f0eaff;--muted:#b6acd2;--accent:#9A71FF;--accent2:#C9B1FF;--gold:#d2a14b;--warm:#f0bf70;--bad:#ff6d8f;--good:#45d28c;
+      --shadow:0 18px 50px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),var(--bg2));color:var(--fg);font:14px/1.45 Inter,system-ui,Arial,sans-serif;overflow:hidden}
+    button,input,select,textarea{font:inherit}
+    .app{display:grid;grid-template-rows:56px minmax(0,1fr);height:100vh}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:0 16px 0 18px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.72);backdrop-filter:blur(10px);gap:14px}
+    body[data-theme="dark"] .topbar{background:rgba(18,15,24,.88)}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .hex{width:28px;height:28px;background:linear-gradient(135deg,var(--accent),var(--accent2));clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;color:#041016;font-weight:800;font-size:11px}
+    .brand h1{margin:0;font-size:15px;letter-spacing:.03em}
+    .brand .sub{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:2px}
+    .tabs{display:flex;gap:6px;flex-wrap:wrap}
+    .tab{border:1px solid transparent;background:transparent;color:var(--muted);padding:8px 12px;border-radius:10px;cursor:pointer}
+    .tab.active,.tab:hover{color:var(--fg);background:var(--panel2);border-color:rgba(122,60,255,.18)}
+    .topright{display:flex;align-items:center;gap:12px;white-space:nowrap}.pulse{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(122,60,255,.35);animation:pulse 2.2s infinite}.clock{font-family:var(--mono);font-size:11px;color:var(--muted)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+    .content{display:grid;grid-template-columns:390px minmax(0,1fr);min-height:0}
+    .sidebar{border-right:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(249,245,255,.92));overflow:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+    .main{position:relative;min-width:0;min-height:0;background:radial-gradient(circle at 30% 20%, #f7f3ff 0%, #ece6ff 42%, #ded3ff 100%)}
+    body[data-theme="dark"] .main{background:radial-gradient(circle at 30% 20%, #2b1f3d 0%, #1a1424 42%, #120f18 100%)}
+    .card{background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    body[data-theme="dark"] .card{background:rgba(22,18,32,.95)}
+    .card .hd{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line);gap:10px}
+    .card .hd h3{margin:0;font-size:12px;text-transform:uppercase;letter-spacing:.12em}
+    .card .bd{padding:12px 14px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1}.stack{display:flex;flex-direction:column;gap:8px}
+    label{display:block;font-size:11px;color:var(--muted);margin:0 0 4px;text-transform:uppercase;letter-spacing:.08em}
+    input,select,textarea,button{border:1px solid var(--line);background:rgba(255,255,255,.95);color:var(--fg);border-radius:10px;padding:9px 10px}
+    body[data-theme="dark"] input,body[data-theme="dark"] select,body[data-theme="dark"] textarea,body[data-theme="dark"] button{background:#1a1424}
+    textarea{resize:vertical;min-height:72px}
+    button{cursor:pointer;transition:.15s transform,.15s border-color,.15s background} button:hover{border-color:rgba(122,60,255,.45)} button:active{transform:translateY(1px)}
+    .primary{background:linear-gradient(180deg,rgba(122,60,255,.14),rgba(122,60,255,.05))}.good{background:linear-gradient(180deg,rgba(46,201,122,.16),rgba(46,201,122,.06))}.warn{background:linear-gradient(180deg,rgba(255,200,87,.16),rgba(255,200,87,.06))}.bad{background:linear-gradient(180deg,rgba(255,111,122,.16),rgba(255,111,122,.06))}
+    .statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:12px;border:1px solid var(--line);border-radius:12px;background:#faf7ff} body[data-theme="dark"] .stat{background:rgba(255,255,255,.05)}.stat .k{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}.stat .v{font-size:24px;font-weight:700;margin-top:6px}.stat .s{font-size:11px;color:var(--muted);margin-top:2px}
+    .mini-table{width:100%;border-collapse:collapse;font-size:12px}.mini-table th,.mini-table td{padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left}.mini-table th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+    body[data-theme="light"] .mini-table th,body[data-theme="light"] .mini-table td{border-bottom:1px solid rgba(16,32,44,.08)}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border:1px solid var(--line);border-radius:999px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+    .feed{display:flex;flex-direction:column;gap:8px;max-height:240px;overflow:auto}.feed-item{padding:10px;border:1px solid var(--line);border-radius:10px;background:#faf7ff} body[data-theme="dark"] .feed-item{background:rgba(255,255,255,.03)}.feed-item .t{font-size:12px;font-weight:600}.feed-item .m{font-size:11px;color:var(--muted);margin-top:3px}.feed-item .meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:6px}
+    .log{height:160px;overflow:auto;font-size:11px;background:#faf7ff;border:1px solid var(--line);border-radius:10px;padding:8px} body[data-theme="dark"] .log{background:rgba(255,255,255,.03)}.log-item{padding:3px 0;border-bottom:1px dashed rgba(255,255,255,.06)}
+    body[data-theme="light"] .log-item{border-bottom:1px dashed rgba(16,32,44,.08)}
+    .view{display:none}.view.active{display:block}
+    #mapRoot{position:absolute;inset:0;overflow:hidden}.map-canvas{position:absolute;inset:0;overflow:hidden;user-select:none;touch-action:none}
+    #tiles{position:absolute;inset:0;z-index:0}.map-canvas svg{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2}.bp{position:absolute;pointer-events:none;display:none;transform-origin:center center;z-index:1;filter:drop-shadow(0 0 18px rgba(122,60,255,.18))}.rf{position:absolute;inset:0;z-index:3;pointer-events:none}
+    .hud{position:absolute;right:14px;top:14px;display:flex;flex-direction:column;gap:10px;z-index:8;max-width:360px;max-height:calc(100vh - 84px);overflow:auto;padding-right:4px}
+    .hudcard{background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:12px;padding:10px;backdrop-filter:blur(8px)} body[data-theme="dark"] .hudcard{background:rgba(18,15,24,.86)}
+    .hudcard h4{margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.12em}.kv{display:grid;grid-template-columns:120px 1fr;gap:4px 8px;font-size:12px}.meter{height:7px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:999px;overflow:hidden}.meter>span{display:block;height:100%;background:linear-gradient(90deg,#B18CFF,var(--accent));width:0%}
+    .maptag{position:absolute;left:14px;bottom:14px;z-index:8;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.78);border:1px solid var(--line);font-size:11px;color:var(--muted)} body[data-theme="dark"] .maptag{background:rgba(18,15,24,.86)}
+    .fatal{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:20;max-width:min(860px,calc(100vw - 24px));padding:12px 14px;border-radius:12px;background:rgba(65,12,18,.92);border:1px solid rgba(255,111,122,.45);display:none;white-space:pre-wrap;font-size:12px;box-shadow:var(--shadow)}
+    .hidden{display:none !important}.small{font-size:11px;color:var(--muted)} .mono{font-family:var(--mono)}
+    @media (max-width:1160px){.content{grid-template-columns:350px minmax(0,1fr)}.statgrid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:980px){body{overflow:auto}.app{height:auto;min-height:100vh}.content{grid-template-columns:1fr}.main{min-height:70vh}.hud{left:14px;right:14px;top:auto;bottom:54px;max-width:none}.statgrid{grid-template-columns:1fr 1fr}.tabs{display:none}}
+  
+    .v8-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:rgba(122,60,255,.08);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent)}
+    .kv2{display:grid;grid-template-columns:140px 1fr;gap:6px 8px;font-size:12px}
+    .codebox{font-family:var(--mono);font-size:11px;background:#faf7ff;border:1px solid var(--line);border-radius:10px;padding:10px;max-height:180px;overflow:auto;white-space:pre-wrap}
+    body[data-theme="dark"] .codebox{background:rgba(255,255,255,.03)}
+    .presence{display:flex;flex-wrap:wrap;gap:6px}.presence .pill{background:rgba(122,60,255,.08);color:var(--fg)}
+
+  
+    .lucifer-depth{background:radial-gradient(circle at 50% 42%, rgba(255,255,255,.20), rgba(122,60,255,.10) 28%, rgba(15,10,26,.06) 56%, rgba(15,10,26,.22) 100%)}
+    body[data-theme="dark"] .lucifer-depth{background:radial-gradient(circle at 50% 42%, rgba(255,255,255,.05), rgba(154,113,255,.10) 20%, rgba(18,15,24,.18) 60%, rgba(5,4,8,.45) 100%)}
+    #tiles img{image-rendering:auto;transform-origin:0 0;filter:saturate(.88) contrast(1.02) brightness(1.02)}
+    body[data-theme="dark"] #tiles img{filter:saturate(.82) contrast(1.04) brightness(.88)}
+    .atmo{position:absolute;inset:0;pointer-events:none;z-index:4}
+    .atmo-back{background:
+      radial-gradient(circle at 50% 50%, rgba(255,255,255,.00) 0 42%, rgba(122,60,255,.05) 55%, rgba(122,60,255,.10) 72%, rgba(0,0,0,.22) 100%),
+      linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0) 24%, rgba(0,0,0,.05) 100%);
+      mix-blend-mode:multiply;}
+    body[data-theme="dark"] .atmo-back{background:
+      radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0 38%, rgba(154,113,255,.08) 55%, rgba(154,113,255,.14) 70%, rgba(0,0,0,.38) 100%),
+      linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0) 26%, rgba(0,0,0,.15) 100%);mix-blend-mode:screen;}
+    .atmo-front{box-shadow:inset 0 0 120px rgba(255,255,255,.14), inset 0 -60px 100px rgba(0,0,0,.10), inset 0 0 220px rgba(122,60,255,.10);}
+    body[data-theme="dark"] .atmo-front{box-shadow:inset 0 0 120px rgba(255,255,255,.04), inset 0 -70px 120px rgba(0,0,0,.28), inset 0 0 260px rgba(154,113,255,.12);}
+
+  </style>
+</head>
+<body data-theme="light">
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="hex">ARC</div>
+      <div>
+        <h1>LuciferAI Spatial Intelligence Engine — RG Fusion v8</h1>
+        <div class="sub">Lucifer purple light command center · spatial signal ops · service architecture · collaboration · RBAC · benchmark harness</div>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="dashboard">Dashboard</button>
+      <button class="tab" data-tab="operations">Operations</button>
+      <button class="tab" data-tab="signals">Signals</button>
+      <button class="tab" data-tab="sessions">Sessions</button>
+      <button class="tab" data-tab="settings">Settings</button>
+    </nav>
+    <div class="topright"><div class="pulse"></div><div class="clock" id="clock"></div></div>
+  </header>
+  <div class="content">
+    <aside class="sidebar">
+      <section class="view active" id="view-dashboard">
+        <div class="card"><div class="hd"><h3>Command Summary</h3><span class="pill" id="bootPill">BOOT · INIT</span></div><div class="bd"><div class="statgrid" id="statsGrid"></div></div></div>
+        <div class="card"><div class="hd"><h3>Signal Feed</h3><button id="clearSignalsBtn">Clear</button></div><div class="bd"><div class="feed" id="signalFeed"></div></div></div>
+        <div class="card"><div class="hd"><h3>Recent Operations</h3></div><div class="bd"><div class="log" id="log"></div></div></div>
+        <div class="card"><div class="hd"><h3>Replay Timeline</h3></div><div class="bd stack">
+          <input id="timelineRange" type="range" min="0" max="0" step="1" value="0">
+          <div class="row"><button id="playbackStartBtn" class="primary">Play</button><button id="playbackPauseBtn">Pause</button><button id="playbackStepBtn">Step</button><div class="grow small" id="timelineLabel">No replay loaded.</div></div>
+        </div></div>
+      </section>
+      <section class="view" id="view-operations">
+        <div class="card"><div class="hd"><h3>Structure Lock</h3></div><div class="bd stack">
+          <div><label for="searchInput">Search structure</label><div class="row"><input id="searchInput" class="grow" placeholder="100 Pine Ave / Lakeview / house"><button id="searchBtn" class="primary">Search</button></div></div>
+          <div><label for="structureSelect">Structures</label><select id="structureSelect"></select></div>
+          <div class="grid2"><button id="lockBtn" class="good">Lock</button><button id="clearBtn" class="bad">Clear</button></div>
+          <div class="small" id="selectionStatus">No structure locked.</div>
+        </div></div>
+        <div class="card"><div class="hd"><h3>Map Controls</h3></div><div class="bd stack">
+          <div class="grid2"><div><label>Tile Provider</label><select id="providerSelect"><option value="dark">Dark</option><option value="street">Street</option><option value="satellite">Satellite</option><option value="topo">Topo</option></select></div><div><label>Map Zoom</label><input id="zoomLevelInput" type="number" min="3" max="19.5" step="0.1" value="16.7"></div></div>
+          <div class="grid2"><button id="toggleMarkerBtn">Toggle Marker</button><button id="toggleRadiusBtn">Toggle 200m Radius</button></div>
+          <div class="grid2"><button id="fitStructureBtn">Fit Locked</button><button id="recenterAllBtn">Fit All</button></div>
+        </div></div>
+        <div class="card"><div class="hd"><h3>Blueprint Overlay</h3></div><div class="bd stack">
+          <input id="bpFile" type="file" accept="image/*">
+          <div class="grid2"><div><label>Opacity</label><input id="bpOpacity" type="range" min="0" max="1" step="0.05" value="0.45"></div><div><label>Scale</label><input id="bpScale" type="range" min="0.4" max="2.2" step="0.05" value="1"></div></div>
+          <div class="grid2"><div><label>Offset X</label><input id="bpOffsetX" type="range" min="-0.0003" max="0.0003" step="0.00001" value="0"></div><div><label>Offset Y</label><input id="bpOffsetY" type="range" min="-0.0003" max="0.0003" step="0.00001" value="0"></div></div>
+          <div class="grid2"><button id="saveBlueprint" class="good">Save</button><button id="resetBlueprint" class="warn">Reset</button></div>
+        </div></div>
+        <div class="card"><div class="hd"><h3>Simulation</h3></div><div class="bd stack">
+          <div class="grid3"><button id="startBtn" class="good">Start</button><button id="stopBtn" class="warn">Stop</button><button id="stepBtn" class="primary">Step</button></div>
+          <div class="grid2"><div><label>Tick ms</label><input id="tickMs" type="number" min="200" max="5000" value="900"></div><div><label>Noise dB</label><input id="noiseDb" type="number" min="0" max="15" value="3"></div></div>
+          <div class="grid2"><div><label>Signal Threshold dBm</label><input id="signalThreshold" type="number" min="-95" max="-20" value="-58"></div><div><label>Scenario Label</label><input id="scenarioLabel" placeholder="Default live sweep"></div></div>
+        </div></div>
+      </section>
+      <section class="view" id="view-signals">
+        <div class="card"><div class="hd"><h3>Sensor Observations</h3><button id="refreshSignalsBtn">Refresh</button></div><div class="bd"><div id="signalsTableWrap"></div></div></div>
+        <div class="card"><div class="hd"><h3>Anomaly Queue</h3></div><div class="bd"><div class="feed" id="anomalyFeed"></div></div></div>
+        <div class="card"><div class="hd"><h3>Operator Notes</h3></div><div class="bd stack"><textarea id="noteInput" placeholder="Attach investigation note to the current structure / signal run"></textarea><div class="grid2"><button id="saveNoteBtn" class="primary">Save Note</button><button id="clearNotesBtn">Clear Notes</button></div><div class="feed" id="noteFeed"></div></div></div>
+      </section>
+      <section class="view" id="view-sessions">
+        <div class="card"><div class="hd"><h3>Session Archive</h3></div><div class="bd stack">
+          <div><label for="sessionName">Session name</label><input id="sessionName" placeholder="Williams Lake demo / sweep 01"></div>
+          <div class="grid3"><button id="saveSessionBtn" class="good">Save</button><button id="exportSessionBtn" class="primary">Export</button><button id="importSessionBtn">Import JSON</button></div>
+          <input id="sessionFile" type="file" accept="application/json" class="hidden">
+          <div id="sessionsList"></div>
+        </div></div>
+      </section>
+      <section class="view" id="view-settings">
+        <div class="card"><div class="hd"><h3>Display + Pipeline</h3></div><div class="bd stack">
+          <div class="grid2"><button id="themeDarkBtn">Dark</button><button id="themeLightBtn">Light</button></div>
+          <div><label>Calibration Profile</label><select id="calibrationProfile"><option value="balanced">Balanced</option><option value="urban">Urban Dense</option><option value="residential">Residential</option><option value="interference">High Interference</option></select></div>
+          <div><label>Structure Pack Import</label><input id="structurePackFile" type="file" accept="application/json"></div>
+          <div class="grid2"><button id="exportStructuresBtn">Export Structures</button><button id="resetDemoBtn" class="warn">Reset Demo Data</button></div>
+          <div class="small">Imports can append additional structures using the same polygon schema the engine already uses.</div>
+        </div></div>
+
+        <div class="card"><div class="hd"><h3>Advanced Inference</h3></div><div class="bd stack">
+          <div class="grid2"><div><label>Floor Mode</label><select id="floorSelect"><option value="1">Floor 1</option><option value="2">Floor 2</option><option value="3">Floor 3</option></select></div><div><label>Geofence Radius (m)</label><input id="geofenceRadius" type="number" min="8" max="250" step="1" value="38"></div></div>
+          <div class="grid2"><div><label>Scenario Preset</label><select id="scenarioPreset"><option value="sweep">Sweep</option><option value="patrol">Patrol</option><option value="intrusion">Intrusion</option><option value="linger">Linger</option></select></div><div><label>Particle Cloud</label><select id="cloudDensity"><option value="0">Off</option><option value="12">12</option><option value="24" selected>24</option><option value="48">48</option></select></div></div>
+          <div class="grid2"><button id="autoCalibrateBtn" class="primary">Run Calibration Wizard</button><button id="exportManifestBtn">Export Manifest</button></div>
+          <div id="calibrationWizardOut" class="small">Calibration wizard idle.</div>
+        </div></div>
+        <div class="card"><div class="hd"><h3>Accuracy Lab</h3></div><div class="bd stack">
+          <div class="grid2"><div><label>Monte Carlo Frames</label><input id="labFrames" type="number" min="20" max="500" value="120"></div><div><label>Seed</label><input id="labSeed" type="number" min="1" max="99999" value="101"></div></div>
+          <div class="grid3"><button id="runAccuracyBtn" class="good">Run Accuracy Lab</button><button id="exportAccuracyBtn">Export Report</button><button id="jumpLastReportBtn">Open Latest Session</button></div>
+          <div id="accuracyReportOut" class="small">No report generated yet.</div>
+        </div></div>
+        
+        <div class="card"><div class="hd"><h3>Ingestion Gateway</h3></div><div class="bd stack">
+          <div class="grid2"><div><label>Adapter</label><select id="ingestAdapter"><option value="mock">Mock Live</option><option value="json">JSON Track</option><option value="csv">CSV Track</option><option value="nmea">NMEA-ish</option></select></div><div><label>Poll ms</label><input id="ingestPollMs" type="number" min="200" max="5000" value="1200"></div></div>
+          <div><label>Payload / lines</label><textarea id="ingestText" placeholder='JSON: {"points":[{"lat":52.1317,"lng":-122.1421}]}&#10;CSV: lat,lng,floor&#10;52.1317,-122.1421,1&#10;NMEA-ish: LAT=52.1317,LNG=-122.1421,FLOOR=1'></textarea></div>
+          <div class="grid3"><button id="applyIngestBtn" class="primary">Apply Payload</button><button id="startIngestBtn" class="good">Start Live</button><button id="stopIngestBtn">Stop Live</button></div>
+          <div id="ingestStatus" class="small">Gateway idle.</div>
+        </div></div>
+        <div class="card"><div class="hd"><h3>Operator Team</h3></div><div class="bd stack">
+          <div class="grid3"><input id="operatorName" placeholder="Operator"><select id="operatorRole"><option>Lead</option><option>Analyst</option><option>Field</option><option>Observer</option></select><button id="addOperatorBtn" class="primary">Add</button></div>
+          <div id="operatorsList"></div>
+        </div></div>
+        <div class="card"><div class="hd"><h3>Incident Workflow</h3></div><div class="bd stack">
+          <div class="grid3"><input id="incidentTitle" placeholder="Incident title"><select id="incidentSeverity"><option value="info">Info</option><option value="watch">Watch</option><option value="alert">Alert</option></select><button id="createIncidentBtn" class="bad">Create</button></div>
+          <div id="incidentsList"></div>
+          <div class="grid2"><button id="exportEvidenceBtn">Export Evidence Pack</button><button id="raiseSignalIncidentBtn" class="warn">Raise From Latest Signal</button></div>
+        </div></div>
+<div class="card"><div class="hd"><h3>Audit Snapshot</h3></div><div class="bd"><div id="auditSnapshot"></div></div></div>
+      </section>
+    </aside>
+    <main class="main">
+      <div class="fatal" id="fatal"></div>
+      <div id="mapRoot">
+        <div class="map-canvas lucifer-depth" id="map"><div id="tiles"></div><div id="atmoBack" class="atmo atmo-back"></div><img id="bpImage" class="bp" alt="Blueprint overlay"><svg id="mapSvg" viewBox="0 0 1000 1000" preserveAspectRatio="none"></svg><canvas id="rf" class="rf"></canvas><div id="atmoFront" class="atmo atmo-front"></div></div>
+      </div>
+      <div class="hud">
+        <div class="hudcard"><h4>Selection</h4><div class="kv" id="selectionKv"></div></div>
+        <div class="hudcard"><h4>Estimator</h4><div class="kv" id="estimatorKv"></div><div class="meter" style="margin-top:8px"><span id="confidenceBar"></span></div></div>
+        <div class="hudcard"><h4>Pipeline Health</h4><div class="kv" id="healthKv"></div></div>
+        <div class="hudcard"><h4>Accuracy / Fusion</h4><div class="kv" id="fusionKv"></div></div>
+      </div>
+      <div class="maptag" id="mapTag">LuciferAI map · drag to pan · wheel to zoom · provider-aware fallback engine</div>
+    </main>
+  </div>
+</div>
+<script src="./arc/app.bundle.js"></script>
+<script src="./arc/v8.service.js"></script>
+<script src="./arc/local_address_tiling_patch.js"></script>
+</body>
+</html>

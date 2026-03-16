@@ -1,0 +1,10 @@
+{
+  "name": "arc-spatial-signal-intelligence-engine",
+  "version": "4.0.0",
+  "private": true,
+  "description": "LuciferAI light command center fusion with replay, calibration, and spatial tracking.",
+  "scripts": {
+    "serve": "python3 -m http.server 8080 -d app"
+  },
+  "license": "MIT"
+}
