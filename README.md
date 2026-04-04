@@ -1,238 +1,314 @@
 # ARC Spatial Signal Intelligence Engine
 
-A real-time spatial signal intelligence framework for mapping and
-analyzing RF, WiFi, and sensor-based signals across physical space.
+A research-first framework for **real-time spatial signal intelligence**:
+ingesting RF, Wi‑Fi, and sensor-derived measurements, modeling propagation,
+fusing observations over time, and rendering signal activity as spatial fields.
 
-This project provides a modular engine capable of ingesting signal data,
-simulating propagation physics, performing sensor fusion, and rendering
-geospatial signal fields in real time.
+> **Current status:** architecture / research foundation. This repository is not
+> yet a production-grade implementation of a full signal intelligence platform.
+> It is the public-facing specification and project foundation for the engine's
+> ingestion, fusion, mapping, and visualization model.
 
-The goal is to create an extensible spatial computing platform that can
-be used for RF visualization, signal analysis, device tracking
-experiments, and geospatial intelligence research.
+---
 
-------------------------------------------------------------------------
+## Why this exists
 
-# Core Concept
+Most signal tooling treats measurements as isolated readings.
 
-Signals exist in physical space.
+This project treats signals as **events embedded in physical space**.
+The goal is to model how signal measurements move through time, terrain,
+sensor uncertainty, and geospatial grids so that RF and Wi‑Fi activity can be:
 
-ARC treats RF and WiFi signals as spatial phenomena that can be:
+- ingested in real time
+- normalized and filtered
+- fused across multiple sensors
+- projected into spatial estimates
+- visualized as heatmaps, fields, and tracks
 
-• measured\
-• simulated\
-• fused with sensors\
-• mapped across terrain\
-• visualized as real-time signal fields
+The long-term aim is an extensible spatial computing engine for:
 
-The engine builds a spatial grid and continuously updates signal
-estimates based on incoming sensor data.
+- RF visualization
+- Wi‑Fi mapping
+- propagation experiments
+- device localization research
+- geospatial signal analysis
+- multi-sensor tracking pipelines
 
-------------------------------------------------------------------------
+---
 
-# Key Features
+## Core concept
 
-Real-time signal ingestion\
-RF propagation modeling\
-WiFi signal mapping\
-sensor fusion filtering\
-spatial grid signal fields\
-device signal tracking\
-signal heatmap generation\
-simulation environment for propagation experiments
+Signals exist in **space**, **time**, and **measurement uncertainty**.
 
-------------------------------------------------------------------------
+The engine is designed around five layers:
 
-# Architecture
+1. **Signal ingestion** — capture raw measurements from Wi‑Fi, RF, GPS, and custom sensors
+2. **Processing** — filter noise, normalize readings, and estimate observation quality
+3. **Propagation modeling** — estimate attenuation, path loss, and environmental effects
+4. **Sensor fusion** — smooth and reconcile multi-source measurements over time
+5. **Spatial rendering** — update a geospatial grid and visualize the resulting field
 
+---
+
+## Planned capabilities
+
+### Signal ingestion
+- Wi‑Fi scan ingestion
+- RF receiver measurement ingestion
+- GPS-tagged signal observations
+- custom sensor array adapters
+- timestamped observation streams
+
+### Processing and normalization
+- RSSI normalization
+- observation weighting
+- temporal filtering
+- noise suppression
+- confidence scoring
+
+### Propagation and estimation
+- log-distance path loss modeling
+- attenuation estimation
+- multipath / obstruction experimentation
+- terrain-aware expansion path for future work
+
+### Sensor fusion
+- Kalman-style temporal smoothing
+- multi-sensor reconciliation
+- device track stabilization
+- rolling field estimation
+
+### Spatial field engine
+- tiled geospatial grids
+- signal density mapping
+- signal-strength interpolation
+- temporal persistence / decay
+
+### Visualization
+- heatmaps
+- propagation fields
+- track overlays
+- debug telemetry and grid diagnostics
+
+---
+
+## Example architecture
+
+```text
 Signal Sources
-
-WiFi scanners\
-RF receivers\
-GPS sensors\
-custom sensor arrays
-
-↓
-
+  ├─ Wi‑Fi scanners
+  ├─ RF receivers
+  ├─ GPS sensors
+  └─ custom sensor arrays
+          │
+          ▼
 Signal Processing Layer
-
-noise filtering\
-signal normalization\
-RSSI analysis
-
-↓
-
+  ├─ noise filtering
+  ├─ normalization
+  └─ RSSI analysis
+          │
+          ▼
 Propagation Engine
-
-path loss modeling\
-signal attenuation simulation\
-multipath reflection modeling
-
-↓
-
-Sensor Fusion
-
-Kalman filtering\
-measurement smoothing\
-temporal signal stabilization
-
-↓
-
+  ├─ path loss modeling
+  ├─ attenuation estimation
+  └─ reflection / multipath experimentation
+          │
+          ▼
+Sensor Fusion Layer
+  ├─ temporal smoothing
+  ├─ state estimation
+  └─ confidence stabilization
+          │
+          ▼
 Spatial Grid Engine
-
-geospatial tiling\
-signal field updates\
-signal density calculations
-
-↓
-
+  ├─ geospatial tiling
+  ├─ field updates
+  └─ density calculations
+          │
+          ▼
 Visualization Layer
+  ├─ heatmaps
+  ├─ tracks
+  └─ propagation fields
+```
 
-heatmaps\
-device tracks\
-propagation fields
+---
 
-------------------------------------------------------------------------
+## Repository status
 
-# Repository Structure
+This repository currently documents the **intended architecture** and public
+project direction.
 
-spatial-signal-intelligence-engine/
+It does **not** yet include the full implementation advertised in the original
+conceptual README structure.
 
-app/\
-index.html\
-main.js\
-renderer.js
+That distinction matters.
 
-engine/\
-core/\
-sensors/\
-fusion/\
-mapping/
+This repo should currently be understood as:
 
-simulations/\
-rf_propagation_sim.js
+- a research / architecture package
+- a planning and documentation base
+- a public-facing foundation for future implementation work
 
-examples/\
-wifi_mapping_demo.js\
-rf_propagation_demo.js
+It should **not** yet be presented as a complete deployed SIGINT platform.
 
-docs/\
-architecture.md\
-math_model.md\
-rf_propagation.md\
-sensor_fusion.md
+---
 
-tests/\
-propagation.test.js\
-fusion.test.js
+## Proposed repository structure
 
-------------------------------------------------------------------------
+```text
+A-real-time-spatial-signal-intelligence-engine/
+├─ README.md
+├─ CHANGELOG.md
+├─ LICENSE
+├─ CONTRIBUTING.md
+├─ SECURITY.md
+├─ CODE_OF_CONDUCT.md
+├─ .gitignore
+├─ docs/
+│  ├─ architecture.md
+│  ├─ roadmap.md
+│  └─ math-model.md
+├─ app/
+│  ├─ index.html
+│  ├─ main.js
+│  └─ renderer.js
+├─ engine/
+│  ├─ core/
+│  ├─ sensors/
+│  ├─ fusion/
+│  └─ mapping/
+├─ simulations/
+├─ examples/
+└─ tests/
+```
 
-# Quick Start
+---
 
-Clone the repository
+## Quick start
 
+At the moment, this repository is documentation-first.
 
-cd spatial-signal-intelligence-engine
+### Read the core docs
+- [`docs/architecture.md`](docs/architecture.md)
+- [`docs/math-model.md`](docs/math-model.md)
+- [`docs/roadmap.md`](docs/roadmap.md)
 
-Run a demo simulation
+### Planned future usage
+Once implementation lands, the intended workflow is:
 
-node examples/wifi_mapping_demo.js
+```bash
+git clone https://github.com/GareBear99/A-real-time-spatial-signal-intelligence-engine.git
+cd A-real-time-spatial-signal-intelligence-engine
+# run examples / simulations once implementation is added
+```
 
-Open the visualization interface
+---
 
-open app/index.html
+## Mathematical foundation
 
-------------------------------------------------------------------------
+A baseline propagation model can be represented with the log-distance path
+loss equation:
 
-# Example
-
-Basic signal ingestion
-
-const SignalEngine = require('./engine/core/signal_engine')
-
-const engine = new SignalEngine()
-
-engine.ingestReading({ lat: 48.4284, lon: -123.3656, signal: -55 })
-
-engine.ingestReading({ lat: 48.4285, lon: -123.3657, signal: -60 })
-
-console.log(engine.computeField())
-
-------------------------------------------------------------------------
-
-# Mathematical Model
-
-Signal propagation follows the log-distance path loss model
-
+```text
 Pr(d) = Pt + Gt + Gr − L(d)
-
-Path loss
-
 L(d) = L0 + 10n log10(d / d0)
+```
 
-Sensor fusion uses Kalman filtering
+Where:
 
+- `Pr(d)` is received power at distance `d`
+- `Pt` is transmitted power
+- `Gt`, `Gr` are transmitter / receiver gains
+- `L(d)` is path loss
+- `n` is the path loss exponent for the environment
+
+A baseline temporal fusion model can be represented with a state-estimation /
+Kalman-style update:
+
+```text
 x̂k = x̂k−1 + Kk(zk − Hx̂k−1)
+```
 
-These models allow signal strength measurements to be transformed into
-spatial distance estimates and fused across sensors.
+These are starting points only. Real deployments will need calibration,
+environment-specific modeling, and measurement-quality handling.
 
-------------------------------------------------------------------------
+---
 
-# Example Use Cases
+## Example use cases
 
-WiFi signal mapping\
-RF propagation experiments\
-device localization experiments\
-signal density heatmaps\
-geospatial signal analysis\
-sensor fusion research
+- Wi‑Fi signal mapping experiments
+- RF propagation research and simulation
+- device localization prototypes
+- spatial heatmap generation
+- geospatial sensor fusion experiments
+- educational / research visualization of signal fields
 
-------------------------------------------------------------------------
+---
 
-# Roadmap
+## Roadmap
 
-Version 1\
-basic signal ingestion\
-WiFi signal mapping\
-spatial grid heatmaps
+### Phase 1 — documentation and public foundation
+- clarify project scope
+- define architecture
+- define math/modeling assumptions
+- add repo hygiene and contributor docs
 
-Version 2\
-sensor fusion tracking\
-device localization\
-multi-sensor triangulation
+### Phase 2 — minimal implementation
+- basic ingestion model
+- grid update prototype
+- simple propagation simulation
+- lightweight visualization demo
 
-Version 3\
-terrain modeling\
-3D propagation simulation\
-large-scale spatial grids
+### Phase 3 — multi-sensor fusion
+- temporal smoothing
+- track estimation
+- confidence weighting
+- basic replay/test data support
 
-------------------------------------------------------------------------
+### Phase 4 — advanced spatial modeling
+- terrain inputs
+- larger grids
+- 3D propagation extensions
+- richer simulation and diagnostics
 
-# Contributing
+---
 
-Contributions are welcome.
+## Contributing
 
-Areas of interest include
+Contributions are welcome, especially in:
 
-RF modeling\
-sensor fusion algorithms\
-geospatial visualization\
-signal propagation physics\
-hardware sensor integration
+- propagation modeling
+- RF / Wi‑Fi measurement pipelines
+- sensor fusion
+- geospatial rendering
+- simulation tooling
+- test and validation infrastructure
 
-------------------------------------------------------------------------
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 
-# License
+---
 
-MIT License
+## Security and ethics
 
-------------------------------------------------------------------------
+This project is intended for legitimate research, visualization,
+architecture exploration, and lawful signal-analysis experimentation.
 
-# Project Status
+Do not use this repository to facilitate unauthorized surveillance,
+interference, or unlawful collection of communications data.
 
-Research prototype / experimental framework.
+Please report security concerns according to [SECURITY.md](SECURITY.md).
 
-Designed as a foundation for spatial computing and signal intelligence
-research.
+---
+
+## License
+
+Released under the [MIT License](LICENSE).
+
+---
+
+## Author
+
+**Gary Doman**
+
+GitHub: [@GareBear99](https://github.com/GareBear99)
