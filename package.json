@@ -1,0 +1,12 @@
+{
+  "name": "arc-spatial-signal-intelligence-engine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser-first spatial signal intelligence prototype for RF/Wi‑Fi mapping, geospatial sensor fusion, propagation experiments, and structure-aware signal estimation.",
+  "scripts": {
+    "serve:canonical": "python3 -m http.server 8080 -d ARC_Spatial_Signal_Intelligence_Engine_Canonical_v1/app",
+    "serve:rg": "python3 -m http.server 8080 -d ARC_Spatial_Intelligence_RG_Fusion_v8_1_Fixed/app",
+    "serve:v17": "python3 -m http.server 8080 -d ARC_v17_gps_fallback_map"
+  },
+  "license": "MIT"
+}

@@ -1,4 +1,14 @@
+
 # Changelog
+
+## 2026-04-03 — Repo public-facing hardening pass
+
+- rewrote root README to reflect the actual prototype package state
+- added clearer canonical entry points and quick-start routes
+- added ecosystem stack documentation and SEO notes
+- added root package.json and .gitignore
+- added lightweight GitHub workflow and issue / PR templates
+- aligned public positioning around prototype + research honesty
 
 All notable changes to this project will be documented in this file.
 
